@@ -121,75 +121,9 @@ class MyHomePage extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+        
           Padding(
-            padding: EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 20.0),
-            child: Text(
-              'Chats',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 26.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xFF414350),
-                borderRadius: BorderRadius.circular(5.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black54,
-                    offset: Offset(0.0, 1.5),
-                    blurRadius: 1.0,
-                    spreadRadius: -1.0,
-                  ),
-                ],
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: <Widget>[
-                      OnlinePersonAction(
-                        personImagePath: 'assets/img/1.jpg',
-                        actColor: Colors.greenAccent,
-                      ),
-                      OnlinePersonAction(
-                        personImagePath: 'assets/img/backdrop.png',
-                        actColor: Colors.yellowAccent,
-                      ),
-                      OnlinePersonAction(
-                        personImagePath: 'assets/img/avatar.png',
-                        actColor: Colors.redAccent,
-                      ),
-                      OnlinePersonAction(
-                        personImagePath: 'assets/img/5.jpg',
-                        actColor: Colors.yellowAccent,
-                      ),
-                      OnlinePersonAction(
-                        personImagePath: 'assets/img/6.jpg',
-                        actColor: Colors.greenAccent,
-                      ),
-                      OnlinePersonAction(
-                        personImagePath: 'assets/img/7.jpg',
-                        actColor: Colors.greenAccent,
-                      ),
-                      OnlinePersonAction(
-                        personImagePath: 'assets/img/1.jpg',
-                        actColor: Colors.greenAccent,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+            padding: const EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 0.0),
             child: Text(
               'Newsfeed',
               style: TextStyle(
