@@ -1,7 +1,7 @@
 use actix_web::{web, HttpResponse, Responder};
-use std::future::Future;
-
-fn login() -> impl Future<Item = &'static str, Error = Error> {
+use std::future::IntoFuture;
+// use pkg future
+fn login() -> impl IntoFuture<Item = &'static str, Error = Error> {
     Ok("wat")
 }
 
