@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "312563070717",
+    "firebase_url": "https://flutter-chaty.firebaseio.com",
+    "project_id": "flutter-chaty",
+    "storage_bucket": "flutter-chaty.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:312563070717:android:18105396141aaac75f7094",
+        "android_client_info": {
+          "package_name": "com.dnsolutons.chacha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "312563070717-51d79pgiaq9nfvg63fcl47460gmhps76.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9k7tcjS1uEC9hgziu5apxNDtTCavWKJc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "312563070717-51d79pgiaq9nfvg63fcl47460gmhps76.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
