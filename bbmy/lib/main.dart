@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'src/pages/Chat.dart';
 import 'src/pages/Login.dart';
 import 'src/pages/Home.dart';
+import 'package:flutter_stetho/flutter_stetho.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  Stetho.initialize();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
