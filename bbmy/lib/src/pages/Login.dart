@@ -1,3 +1,4 @@
+import 'package:bbmy/src/blocs/LoginBloc.dart';
 import 'package:bbmy/src/services/auth.dart';
 import 'package:flutter/material.dart';
 
@@ -9,35 +10,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
-
-  String _email;
-  String _password;
-  String _errorMessage;
-
-  bool _validateAndSave() {
-    final form = _formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      return true;
-    }
-    return false;
-  }
-
-  void _validateAndSubmit() async {
-    setState(() {
-      _errorMessage = "";
-    });
-    if (_validateAndSave()) {
-      String userId = "";
-      try {
-        userId = await widget.auth.signIn(_email, _password);
-        print('SignEEEED INNNN: $userId');
-      } catch (e) {
-        print('Error: $e');
-        // _errorMessage = e.message;
-      }
-    }
-  }
+  LoginBloc _loginBloc = new LoginBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -52,29 +25,9 @@ class _LoginState extends State<Login> {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    TextFormField(
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter some text';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) => _email = value.trim(),
-                    ),
-                    TextFormField(
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter some text2';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) => _password = value.trim(),
-                    ),
-                    RaisedButton(
-                      onPressed: _validateAndSubmit,
-                      child:
-                          const Text('Submit', style: TextStyle(fontSize: 20)),
-                    ),
+                    emailField(_loginBloc),
+                    passwordField(_loginBloc),
+                    submitButton(_loginBloc)
                   ],
                 ),
               )
@@ -84,4 +37,50 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+}
+
+Widget emailField(LoginBloc bloc) {
+  return StreamBuilder(
+    stream: bloc.email,
+    builder: (context, snapshot) {
+      return TextField(
+        onChanged: bloc.changeEmail,
+        keyboardType: TextInputType.emailAddress,
+        decoration: InputDecoration(
+          hintText: 'ypu@example.com',
+          labelText: 'Email Address',
+          errorText: snapshot.error,
+        ),
+      );
+    },
+  );
+}
+
+Widget passwordField(LoginBloc bloc) {
+  return StreamBuilder(
+      stream: bloc.password,
+      builder: (context, snapshot) {
+        return TextField(
+          obscureText: true,
+          onChanged: bloc.changePassword,
+          decoration: InputDecoration(
+            hintText: 'Password',
+            labelText: 'Password',
+            errorText: snapshot.error,
+          ),
+        );
+      });
+}
+
+Widget submitButton(LoginBloc bloc) {
+  return StreamBuilder(
+    stream: bloc.submitValid,
+    builder: (context, snapshot) {
+      return RaisedButton(
+        child: Text('Login'),
+        color: Colors.blue,
+        onPressed: snapshot.hasData ? bloc.submit : null,
+      );
+    },
+  );
 }
