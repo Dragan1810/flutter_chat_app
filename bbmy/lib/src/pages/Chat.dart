@@ -45,7 +45,7 @@ class _ChatState extends State<Chat> {
             child: Text("Hello"),
           ),
         ),
-        title: Text("Tensor Chat"),
+        title: Text("BBMY"),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.close),
