@@ -1,6 +1,9 @@
 import 'package:bbmy/src/blocs/LoginBloc.dart';
 import 'package:bbmy/src/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'Chat.dart';
 
 class Login extends StatefulWidget {
   final BaseAuth auth = Auth();
@@ -14,7 +17,8 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      resizeToAvoidBottomPadding: false,
+      body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(30, 100, 30, 100),
           child: Column(
@@ -77,7 +81,23 @@ Widget submitButton(LoginBloc bloc) {
       return RaisedButton(
         child: Text('Login'),
         color: Colors.blue,
-        onPressed: snapshot.hasData ? bloc.submit : null,
+        onPressed: snapshot.hasData
+            ? () async {
+                FirebaseUser user = await bloc.submit();
+                print('HMMM____user: $user');
+
+                if (user != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Chat(
+                        user: user,
+                      ),
+                    ),
+                  );
+                }
+              }
+            : null,
       );
     },
   );

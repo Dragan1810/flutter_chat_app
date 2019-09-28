@@ -1,170 +1,169 @@
-import 'dart:math';
-
-/**
- * Author: Damodar Lohani
- * profile: https://github.com/lohanidamodar
-  */
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Chat extends StatefulWidget {
-  static final String path = "/src/pages/Chat.dart";
+  static const String id = "CHAT";
+  final FirebaseUser user;
+
+  const Chat({Key key, this.user}) : super(key: key);
   @override
-  _ChatTwoPageState createState() => _ChatTwoPageState();
+  _ChatState createState() => _ChatState();
 }
 
-class _ChatTwoPageState extends State<Chat> {
-  String text;
-  TextEditingController _controller;
-  final List<String> avatars = [
-    "assets/img/1.jpg",
-    "assets/img/3.jpg",
-  ];
-  final List<Message> messages = [
-    Message(0, "But I may not go if the weather is bad."),
-    Message(0, "I suppose I am."),
-    Message(1, "Are you going to market today?"),
-    Message(0, "I am good too"),
-    Message(1, "I am fine, thank you. How are you?"),
-    Message(1, "Hi,"),
-    Message(0, "How are you today?"),
-    Message(0, "Hello,"),
-  ];
-  final rand = Random();
+class _ChatState extends State<Chat> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final Firestore _firestore = Firestore.instance;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController();
+  TextEditingController messageController = TextEditingController();
+  ScrollController scrollController = ScrollController();
+
+  Future<void> callback() async {
+    if (messageController.text.length > 0) {
+      await _firestore.collection('messages').add({
+        'text': messageController.text,
+        'from': widget.user.email,
+        'date': DateTime.now().toIso8601String().toString(),
+      });
+      messageController.clear();
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Chat"),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView.separated(
-              physics: BouncingScrollPhysics(),
-              separatorBuilder: (context, index) {
-                return const SizedBox(height: 10.0);
-              },
-              reverse: true,
-              itemCount: messages.length,
-              itemBuilder: (BuildContext context, int index) {
-                Message m = messages[index];
-                if (m.user == 0) return _buildMessageRow(m, current: true);
-                return _buildMessageRow(m, current: false);
-              },
-            ),
+        leading: Hero(
+          tag: 'logo',
+          child: Container(
+            height: 40.0,
+            child: Text("Hello"),
           ),
-          _buildBottomBar(context),
+        ),
+        title: Text("Tensor Chat"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.close),
+            onPressed: () {
+              _auth.signOut();
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+          )
         ],
+      ),
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _firestore
+                    .collection('messages')
+                    .orderBy('date')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData)
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+
+                  List<DocumentSnapshot> docs = snapshot.data.documents;
+
+                  List<Widget> messages = docs
+                      .map((doc) => Message(
+                            from: doc.data['from'],
+                            text: doc.data['text'],
+                            me: widget.user.email == doc.data['from'],
+                          ))
+                      .toList();
+
+                  return ListView(
+                    controller: scrollController,
+                    children: <Widget>[
+                      ...messages,
+                    ],
+                  );
+                },
+              ),
+            ),
+            Container(
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      onSubmitted: (value) => callback(),
+                      decoration: InputDecoration(
+                        hintText: "Enter a Message...",
+                        border: const OutlineInputBorder(),
+                      ),
+                      controller: messageController,
+                    ),
+                  ),
+                  SendButton(
+                    text: "Send",
+                    callback: callback,
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
 
-  Container _buildBottomBar(BuildContext context) {
+class SendButton extends StatelessWidget {
+  final String text;
+  final VoidCallback callback;
+
+  const SendButton({Key key, this.text, this.callback}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      color: Colors.orange,
+      onPressed: callback,
+      child: Text(text),
+    );
+  }
+}
+
+class Message extends StatelessWidget {
+  final String from;
+  final String text;
+
+  final bool me;
+
+  const Message({Key key, this.from, this.text, this.me}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(
-        vertical: 8.0,
-        horizontal: 16.0,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(30.0),
-      ),
-      padding: const EdgeInsets.symmetric(
-        vertical: 8.0,
-        horizontal: 20.0,
-      ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment:
+            me ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
-          Expanded(
-            child: TextField(
-              textInputAction: TextInputAction.send,
-              controller: _controller,
-              decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 10.0,
-                    horizontal: 20.0,
-                  ),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0)),
-                  hintText: "Aa"),
-              onEditingComplete: _save,
-            ),
+          Text(
+            from,
           ),
-          IconButton(
-            icon: Icon(Icons.send),
-            color: Theme.of(context).primaryColor,
-            onPressed: _save,
+          Material(
+            color: me ? Colors.teal : Colors.red,
+            borderRadius: BorderRadius.circular(10.0),
+            elevation: 6.0,
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+              child: Text(
+                text,
+              ),
+            ),
           )
         ],
       ),
     );
   }
-
-  _save() async {
-    if (_controller.text.isEmpty) return;
-    FocusScope.of(context).requestFocus(FocusNode());
-    setState(() {
-      messages.insert(0, Message(rand.nextInt(2), _controller.text));
-      _controller.clear();
-    });
-  }
-
-  Row _buildMessageRow(Message message, {bool current}) {
-    return Row(
-      mainAxisAlignment:
-          current ? MainAxisAlignment.end : MainAxisAlignment.start,
-      crossAxisAlignment:
-          current ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(width: current ? 30.0 : 20.0),
-        if (!current) ...[
-          CircleAvatar(
-            backgroundImage: AssetImage(
-              current ? avatars[0] : avatars[1],
-            ),
-            radius: 20.0,
-          ),
-          const SizedBox(width: 5.0),
-        ],
-        Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 8.0,
-            horizontal: 16.0,
-          ),
-          decoration: BoxDecoration(
-              color: current ? Theme.of(context).primaryColor : Colors.white,
-              borderRadius: BorderRadius.circular(10.0)),
-          child: Text(
-            message.description,
-            style: TextStyle(
-                color: current ? Colors.white : Colors.black, fontSize: 18.0),
-          ),
-        ),
-        if (current) ...[
-          const SizedBox(width: 5.0),
-          CircleAvatar(
-            backgroundImage: AssetImage(
-              current ? avatars[0] : avatars[1],
-            ),
-            radius: 10.0,
-          ),
-        ],
-        SizedBox(width: current ? 20.0 : 30.0),
-      ],
-    );
-  }
-}
-
-class Message {
-  final int user;
-  final String description;
-
-  Message(this.user, this.description);
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bbmy/src/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 
 class LoginBloc extends Object with Validators {
@@ -19,16 +20,18 @@ class LoginBloc extends Object with Validators {
   Function(String) get changeEmail => _emailController.sink.add;
   Function(String) get changePassword => _passwordController.sink.add;
 
-  submit() async {
+  Future<FirebaseUser> submit() async {
     final validEmail = _emailController.value;
     final validPassword = _passwordController.value;
 
     print('Email is $validEmail, and password is $validPassword');
     try {
-      String userId = await auth.signIn(validEmail, validPassword);
+      FirebaseUser userId = await auth.signIn(validEmail, validPassword);
       print('userId, $userId');
+      return userId;
     } catch (e) {
       print('Error: $e');
+      return null;
     }
   }
 
