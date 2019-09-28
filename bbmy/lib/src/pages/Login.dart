@@ -9,7 +9,6 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final _formKey = GlobalKey<FormState>();
   LoginBloc _loginBloc = new LoginBloc();
 
   @override
@@ -21,8 +20,7 @@ class _LoginState extends State<Login> {
           child: Column(
             children: <Widget>[
               Text("Login"),
-              Form(
-                key: _formKey,
+              Expanded(
                 child: Column(
                   children: <Widget>[
                     emailField(_loginBloc),
