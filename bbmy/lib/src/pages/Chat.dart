@@ -1,3 +1,4 @@
+import 'package:bbmy/src/widgets/Message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -38,17 +39,17 @@ class _ChatState extends State<Chat> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Hero(
-          tag: 'logo',
-          child: Container(
-            height: 40.0,
-            child: Text("Hello"),
-          ),
-        ),
-        title: Text("BBMY"),
+        title: Text("Chat"),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.close),
+            icon: Icon(Icons.photo_camera),
+            onPressed: () {
+              _auth.signOut();
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.more_vert),
             onPressed: () {
               _auth.signOut();
               Navigator.of(context).popUntil((route) => route.isFirst);
@@ -91,31 +92,34 @@ class _ChatState extends State<Chat> {
                 },
               ),
             ),
-            Container(
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: TextField(
-                      onSubmitted: (value) => callback(),
-                      decoration: InputDecoration(
-                        hintText: "Enter a Message...",
-                        border: const OutlineInputBorder(),
-                      ),
-                      controller: messageController,
-                    ),
-                  ),
-                  SendButton(
-                    text: "Send",
-                    callback: callback,
-                  )
-                ],
-              ),
-            ),
+            getInput(callback, messageController)
           ],
         ),
       ),
     );
   }
+}
+
+Widget getInput(callback, messageController) {
+  return Container(
+    child: Row(
+      children: <Widget>[
+        Expanded(
+          child: TextField(
+            onSubmitted: (value) => callback(),
+            decoration: InputDecoration(
+              suffixIcon: IconButton(
+                icon: Icon(Icons.send),
+                onPressed: callback,
+              ),
+              hintText: "Enter a Message...",
+            ),
+            controller: messageController,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class SendButton extends StatelessWidget {
@@ -129,41 +133,6 @@ class SendButton extends StatelessWidget {
       color: Colors.orange,
       onPressed: callback,
       child: Text(text),
-    );
-  }
-}
-
-class Message extends StatelessWidget {
-  final String from;
-  final String text;
-
-  final bool me;
-
-  const Message({Key key, this.from, this.text, this.me}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment:
-            me ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            from,
-          ),
-          Material(
-            color: me ? Colors.teal : Colors.red,
-            borderRadius: BorderRadius.circular(10.0),
-            elevation: 6.0,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-              child: Text(
-                text,
-              ),
-            ),
-          )
-        ],
-      ),
     );
   }
 }
