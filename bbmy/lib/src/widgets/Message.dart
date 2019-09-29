@@ -19,13 +19,14 @@ class Message extends StatelessWidget {
             from,
           ),
           Material(
-            color: me ? Colors.teal : Colors.red,
-            borderRadius: BorderRadius.circular(10.0),
+            color: me ? Colors.blue[400] : Colors.grey,
+            borderRadius: BorderRadius.circular(5.0),
             elevation: 6.0,
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
               child: Text(
                 text,
+                style: TextStyle(color: Colors.white),
               ),
             ),
           )

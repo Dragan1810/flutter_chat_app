@@ -14,8 +14,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Secret',
       theme: ThemeData(
-          brightness: Brightness.dark,
-          primarySwatch: Colors.blueGrey,
+          //  brightness: Brightness.dark,
+          primarySwatch: Colors.blue,
           fontFamily: 'Montserrat',
           textTheme: TextTheme(
             headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
